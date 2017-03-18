@@ -26,4 +26,30 @@ as long as the dictionary itself is the same at the endpoint
 		
 this gives us portability of task
 
+But wait.  There's more!
 
+we can grow our list of decorations in our dd class, and apply them.  
+	
+eg. conditionality
+
+	task.has('when', function never(task){return false;})
+
+eg. persistance of definitions (ie. plans) to file
+	
+	task.has("definition").has("definitionAtFile", "\path\to\file")
+		.load()
+		.save()
+			
+eg. be able to make sure the task will be started if it's stopped (via background polling)
+		
+	task.has("stoppedTaskStarter")
+		.start() //kick it off
+		.stop() //stop it
+
+
+future plans:
+restful endpoints that expose tasks
+ui builder for tasks
+workflow decorations
+...
+free beer
