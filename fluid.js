@@ -13,7 +13,7 @@ const Task = function(fn,args)
 	//publics	
 	this.args = args;
 	this.behaviour = fn;
-	this.returnValue = undefined;
+	this.result = undefined;
 	this.error = undefined;
 	
 	Object.defineProperty(that, "state", 
@@ -29,7 +29,7 @@ const Task = function(fn,args)
 			'use strict';
 			try
 			{
-				that.returnValue = that.behaviour.apply(null, that.args); 
+				that.result = that.behaviour.apply(null, that.args); 
 				that.markCompleted();
 			}
 			catch(e)
@@ -74,7 +74,7 @@ const Task = function(fn,args)
 	{
 		value : function() 
 		{
-			var data = {args: that.args, behaviour: that.behaviour, state: __state, returnValue: that.returnValue, error: that.error};
+			var data = {args: that.args, behaviour: that.behaviour, state: __state, result: that.result, error: that.error};
 			return jsmeta.JSONSerializer.serialize(data);
 		},
 		enumerable: true,
@@ -88,7 +88,7 @@ const Task = function(fn,args)
 			that.args = data.args;
 			that.behaviour = data.behaviour;
 			__state = data.state;
-			that.returnValue = data.returnValue;
+			that.result = data.result;
 			that.error = data.error;
 			
 			return that;
@@ -195,7 +195,7 @@ const TaskDefinition = function(task)
 	
 	//privates
 	var that = this;
-	var __decorations = [];
+	var __clauses = [];
 	
 	//publics
 	this.has = function(decorationName, args)
@@ -204,14 +204,22 @@ const TaskDefinition = function(task)
 		jsmeta.validators.isArray(args);
 		//args = Array.prototype.slice.call(arguments).slice(1);
 		
-		__decorations.push({decorationName: decorationName, args:args});
+		__clauses.push({decorationName: decorationName, args:args});
 		return that;
 	};
-
+	Object.defineProperty(that, "clauses",
+	{
+		get : function()
+		{
+			return __clauses;
+		},
+		enumerable:true,
+		configurable:false
+	});	
 	//import export
 	this.serialize = function()
 	{
-		var data = {root: that.__decorated.serialize(), decorations : __decorations};
+		var data = {root: that.__decorated.serialize(), clauses : __clauses};
 		return jsmeta.JSONSerializer.serialize(data);
 	};
 	this.deserialize = function(data)
@@ -219,7 +227,7 @@ const TaskDefinition = function(task)
 		var dataObj = jsmeta.JSONSerializer.deserialize(data);
 		
 		that.__decorated = dataObj.root;
-		__decorations = data.decorations;
+		__clauses = data.clauses;
 		
 		return that;
 	}
