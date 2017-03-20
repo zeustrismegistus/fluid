@@ -19,8 +19,8 @@
   "author": "zeustrismegistus@tutanota.com",
   "license": "GPL3",
   "dependencies": {
-    "d__jsmeta": "^latest",
-    "d__mutator": "^latest",
+    "d__jsmeta": "0.0.4",
+    "d__mutator": "0.0.3",
     "fs-extra": "^2.0.0"
   },
   "devDependencies": {

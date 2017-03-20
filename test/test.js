@@ -52,7 +52,7 @@ describe('using fluid ', () => {
 	it('decorates a task with definitionness', (done) => {
 
 		var task = fluid.task.new(function increment(val){return val + 1;}, 10);
-		var taskDef = task.decorate("definition");
+		var taskDef = task.mutate("definition");
 
 		//similarly, decorate the definition with clauses, so the verb is "has".  it's the planning corollary to "decorate"
 		taskDef.has("beer",['fox','chamblis','vox']).has("stupidity").has("sweetride",[]).has("startDate", [undefined]);
@@ -80,7 +80,7 @@ describe('using fluid ', () => {
 	it('puts a condition on a task', (done) => {
 	
 		var task = fluid.task.new(function increment(val){return val + 1;}, 10);
-		var neverTask = task.decorate("when", function never(){return false;});
+		var neverTask = task.mutate("when", function never(){return false;});
 
 		//this will prevent a perform from happening
 		neverTask.perform();
@@ -89,7 +89,7 @@ describe('using fluid ', () => {
 
 		//create a task that will only run if a flag is on
 		var isOn = false;
-		var isOnTask = task.decorate("when", function (){return isOn;});
+		var isOnTask = task.mutate("when", function (){return isOn;});
 		isOnTask.perform();
 		expect(isOnTask.returnValue).to.equal(undefined);
 		expect(isOnTask.state).to.equal('stopped');
@@ -105,14 +105,14 @@ describe('using fluid ', () => {
 	it('gives a task definitionness and a backing file for it', (done) => {
 	
 		var task = fluid.task.new(function increment(val){return val + 1;}, 10)
-		.decorate("definition")
+		.mutate("definition")
 		.has("beer",['fox','chamblis','vox']).has("stupidity").has("sweetride",[]).has("startDate", [undefined])
-		.decorate("definitionAtFile", "definition.txt");
+		.mutate("definitionAtFile", "definition.txt");
 		
 		task.save();
 		expect(fs.existsSync("definition.txt")).to.equal(true);
 			
-		var loadedDef = Task.empty().decorate("definition").decorate("definitionAtFile", "definition.txt");
+		var loadedDef = Task.empty().mutate("definition").mutate("definitionAtFile", "definition.txt");
 		loadedDef.load();
 		expect(loadedDef.clauses.length).to.equal(4);
 		expect(loadedDef.clauses[0].decorationName).to.equal('beer');
@@ -143,7 +143,8 @@ describe('using fluid ', () => {
 			danceMoves.push("put your " + activity + " in");
 			danceMoves.push("put your " + activity + " out");
 			danceMoves.push("do the hokey pokey and turn yourself about");
-		}, [sides[0],members[0]).decorate("stoppedTaskStarter");
+		}, [sides[0],members[0])
+		.mutate("stoppedTaskStarter");
 				
 		restartyTask.start(3);	
 
