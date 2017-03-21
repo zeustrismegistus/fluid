@@ -11,7 +11,7 @@ const expect = Code.expect;
 const fs = require('fs-extra');
 const path = require('path');
 
-var fluid = require('./../fluid.js')();
+var fluid = require('./../fluid.js');
 
 describe('using fluid ', () => {
 
@@ -143,7 +143,7 @@ describe('using fluid ', () => {
 			danceMoves.push("put your " + activity + " in");
 			danceMoves.push("put your " + activity + " out");
 			danceMoves.push("do the hokey pokey and turn yourself about");
-		}, [sides[0],members[0])
+		}, sides[0],members[0])
 		.mutate("stoppedTaskStarter");
 				
 		restartyTask.start(3);	
