@@ -28,30 +28,30 @@ describe('using fluid ', () => {
     it('creates a task and clones it', (done) => {
 	
 		//create a simple task
-		var task = fluid.task.new(function increment(val){return val + 1;}, 10);
+		var task = fluid.task.new(function increment(val){return val + 1;}, [10]);
 
 		//it hasn't run yet, so clone it
 		var taskData = task.serialize();
 		var cloneTask = fluid.task.empty().deserialize(taskData);
 
-		expect(cloneTask.returnValue).to.equal(undefined);
+		expect(cloneTask.result).to.equal(undefined);
 		expect(cloneTask.state).to.equal('stopped');
 
 		//run the clone
 		cloneTask.perform();
-		expect(cloneTask.returnValue).to.equal(11);
+		expect(cloneTask.result).to.equal(11);
 		expect(cloneTask.state).to.equal('completed');
 
 		//serialize/deserialize again to see if the result is preserved
 		var cloneTask2 = fluid.task.empty().deserialize(cloneTask.serialize());
-		expect(cloneTask2.returnValue).to.equal(11);
+		expect(cloneTask2.result).to.equal(11);
 		expect(cloneTask2.state).to.equal('completed');
 		
 		done();
     });
 	it('decorates a task with definitionness', (done) => {
 
-		var task = fluid.task.new(function increment(val){return val + 1;}, 10);
+		var task = fluid.task.new(function increment(val){return val + 1;}, [10]);
 		var taskDef = task.mutate("definition");
 
 		//similarly, decorate the definition with clauses, so the verb is "has".  it's the planning corollary to "decorate"
@@ -79,32 +79,32 @@ describe('using fluid ', () => {
     });
 	it('puts a condition on a task', (done) => {
 	
-		var task = fluid.task.new(function increment(val){return val + 1;}, 10);
+		var task = fluid.task.new(function increment(val){return val + 1;}, [10]);
 		var neverTask = task.mutate("when", function never(){return false;});
 
 		//this will prevent a perform from happening
 		neverTask.perform();
-		expect(neverTask.returnValue).to.equal(undefined);
+		expect(neverTask.result).to.equal(undefined);
 		expect(neverTask.state).to.equal('stopped');
 
 		//create a task that will only run if a flag is on
 		var isOn = false;
 		var isOnTask = task.mutate("when", function (){return isOn;});
 		isOnTask.perform();
-		expect(isOnTask.returnValue).to.equal(undefined);
+		expect(isOnTask.result).to.equal(undefined);
 		expect(isOnTask.state).to.equal('stopped');
 
 		//now switch it on
 		isOn = true;
 		isOnTask.perform();
-		expect(isOnTask.returnValue).to.equal(11);
+		expect(isOnTask.result).to.equal(11);
 		expect(isOnTask.state).to.equal('completed');
 		
 		done();
     });
 	it('gives a task definitionness and a backing file for it', (done) => {
 	
-		var task = fluid.task.new(function increment(val){return val + 1;}, 10)
+		var task = fluid.task.new(function increment(val){return val + 1;}, [10])
 		.mutate("definition")
 		.has("beer",['fox','chamblis','vox']).has("stupidity").has("sweetride",[]).has("startDate", [undefined])
 		.mutate("definitionAtFile", "definition.txt");

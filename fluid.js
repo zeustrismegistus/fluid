@@ -8,6 +8,9 @@
 	//define the structure of the core unit of work
 	const Task = function (fn,args)
 	{
+		jsmeta.validators.validateIsFunction(fn);
+		jsmeta.validators.validateIsArray(args);
+		
 		//privates
 		var that = this;
 		var __state = 'stopped';
@@ -103,7 +106,7 @@
 	(()=>{
 		Task.new = function(fn, args){return new Task(fn, args);};
 		
-		Task.empty = function(){return new Task(()=>{});};
+		Task.empty = function(){return new Task(()=>{},[]);};
 	})();
 
 	//create a repo of mutations that we can register our behaviours to
