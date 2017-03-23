@@ -55,10 +55,11 @@ describe('using fluid ', () => {
 		var taskDef = task.mutate("definition");
 
 		//similarly, decorate the definition with clauses, so the verb is "has".  it's the planning corollary to "decorate"
-		taskDef.has("beer",['fox','chamblis','vox']).has("stupidity").has("sweetride",[]).has("startDate", [undefined]);
+		taskDef.has("beer",['fox','chamblis','vox']).has("stupidity",[]).has("sweetride",[]).has("startDate", [undefined]);
 
 		//serialize/deserialize
-		var task2 = fluid.task.empty().deserialize(taskDef.serialize());
+		var taskData = taskDef.serialize();
+		var task2 = fluid.task.empty().deserialize(taskData);
 
 		expect(task2.clauses.length).to.equal(4);
 		expect(task2.clauses[0].decorationName).to.equal('beer');
@@ -67,10 +68,10 @@ describe('using fluid ', () => {
 		expect(task2.clauses[0].args[2]).to.equal('vox');
 
 		expect(task2.clauses[1].decorationName).to.equal('stupidity');
-		expect(task2.clauses[1].args).to.equal(undefined);
+		expect(task2.clauses[1].args.length).to.equal(0);
 
 		expect(task2.clauses[2].decorationName).to.equal('sweetride');
-		expect(task2.clauses[2].args).to.equal([]);
+		expect(task2.clauses[2].args.length).to.equal(0);
 
 		expect(task2.clauses[3].decorationName).to.equal('startDate');
 		expect(task2.clauses[3].args[0]).to.equal(undefined);
@@ -106,7 +107,7 @@ describe('using fluid ', () => {
 	
 		var task = fluid.task.new(function increment(val){return val + 1;}, [10])
 		.mutate("definition")
-		.has("beer",['fox','chamblis','vox']).has("stupidity").has("sweetride",[]).has("startDate", [undefined])
+		.has("beer",['fox','chamblis','vox']).has("stupidity",[]).has("sweetride",[]).has("startDate", [undefined])
 		.mutate("definitionAtFile", "definition.txt");
 		
 		task.save();
@@ -121,10 +122,10 @@ describe('using fluid ', () => {
 		expect(loadedDef.clauses[0].args[2]).to.equal('vox');
 
 		expect(loadedDef.clauses[1].decorationName).to.equal('stupidity');
-		expect(loadedDef.clauses[1].args).to.equal(undefined);
+		expect(loadedDef.clauses[1].args.length).to.equal(0);
 
 		expect(loadedDef.clauses[2].decorationName).to.equal('sweetride');
-		expect(loadedDef.clauses[2].args).to.equal([]);
+		expect(loadedDef.clauses[2].args.length).to.equal(0);
 
 		expect(loadedDef.clauses[3].decorationName).to.equal('startDate');
 		expect(loadedDef.clauses[3].args[0]).to.equal(undefined);

@@ -137,7 +137,7 @@
 		jsmeta.validators.assert(()=>{return task instanceof Task;});
 		
 		//decorate 
-		Seed.new(task).decorate(this);
+		mutator.seed.new(task).decorate(this);
 		
 		//privates
 		var that = this;
@@ -146,8 +146,8 @@
 		//publics
 		this.has = function(decorationName, args)
 		{
-			jsmeta.validators.isNotNullOrUndefined(decorationName);
-			jsmeta.validators.isArray(args);
+			jsmeta.validators.validateNotNullOrUndefined(decorationName);
+			jsmeta.validators.validateIsArray(args);
 			//args = Array.prototype.slice.call(arguments).slice(1);
 			
 			__clauses.push({decorationName: decorationName, args:args});
@@ -165,11 +165,16 @@
 		//import export
 		this.serialize = function()
 		{
-			var data = {root: that.__decorated.serialize(), clauses : __clauses};
+			//get the root task
+			var rootTask = mutator.seed.new(that).asInstanceOf(Task);
+			var taskData = rootTask.serialize();
+			
+			var data = {root: taskData, clauses : __clauses};
 			return jsmeta.JSONSerializer.serialize(data);
 		};
 		this.deserialize = function(data)
 		{
+			
 			var dataObj = jsmeta.JSONSerializer.deserialize(data);
 			
 			that.__decorated = dataObj.root;
@@ -191,11 +196,11 @@
 	//let's add a condition that changes behaviour
 	function TaskWhen (task, /*expects function(task,..) that returns bool*/conditionFn)
 	{
-		jsmeta.validators.assert(()=>{return Seed.new(task).asInstanceOf(Task);});//validate we're dealing with a Task decoration at the core
+		jsmeta.validators.assert(()=>{return mutator.seed.new(task).asInstanceOf(Task);});//validate we're dealing with a Task decoration at the core
 		//jsmeta.validators.assert(()=>{return jsmeta.hasFunctionArgNames(conditionFn, ['task','args']);});//enforce signature smells
 
 		//decorate 
-		Seed.new(task).decorate(this);
+		mutator.seed.new(task).decorate(this);
 		
 		//privates
 		var that = this;
@@ -226,12 +231,12 @@
 	//now we want to decorate the ability to save tasks to a file
 	function TaskDefinitionAtFile (task, filePath)
 	{
-		jsmeta.validators.assert(()=>{return Seed.new(task).asInstanceOf(Task);});//validate we're dealing with a Task decoration at the core
-		jsmeta.validators.assert(()=>{return Seed.new(task).asInstanceOf(TaskDefinition);});//validate we have a definition in the stack
+		jsmeta.validators.assert(()=>{return mutator.seed.new(task).asInstanceOf(Task);});//validate we're dealing with a Task decoration at the core
+		jsmeta.validators.assert(()=>{return mutator.seed.new(task).asInstanceOf(TaskDefinition);});//validate we have a definition in the stack
 		jsmeta.validators.validateNotNullOrEmpty(filePath);
 
 		//decorate 
-		Seed.new(task).decorate(this);
+		mutator.seed.new(task).decorate(this);
 		
 		//privates
 		var that = this;
@@ -281,8 +286,8 @@
 	//we want to add some logic to start the task automatically, and to keep trying if it's stopped
 	function StoppedTaskStarter (task, pollingIntervalSecs)
 	{
-		jsmeta.validators.assert(()=>{return Seed.new(task).asInstanceOf(Task);});//validate we're dealing with a Task decoration at the core
-		jsmeta.validators.assert(()=>{return Seed.new(task).asInstanceOf(TaskDefinition);});//validate we have a definition in the stack
+		jsmeta.validators.assert(()=>{return mutator.seed.new(task).asInstanceOf(Task);});//validate we're dealing with a Task decoration at the core
+		jsmeta.validators.assert(()=>{return mutator.seed.new(task).asInstanceOf(TaskDefinition);});//validate we have a definition in the stack
 		pollingIntervalSecs = pollingIntervalSecs || 20;
 		
 		//decorate task with a condition first that will only perform the task if it's stopped
@@ -290,7 +295,7 @@
 		var whenTask = task.mutate("when", whenFn);
 
 		//now decorate this with the whenTask	
-		Seed.new(whenTask).decorate(this);
+		mutator.seed.new(whenTask).decorate(this);
 		
 		//privates
 		var that = this;
